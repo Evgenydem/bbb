@@ -2,17 +2,21 @@ package com.example.vpn
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.io.File
 import java.net.URL
 
 class VpnViewModel : ViewModel() {
-    val hostNames = mutableListOf<String>()
+    private val _hostNames = MutableStateFlow<List<String>>(emptyList())
+    val hostNames: StateFlow<List<String>> = _hostNames
     private val hostMap = mutableMapOf<String, String>()
 
     suspend fun loadHosts() {
-        withContext(Dispatchers.IO) {
+        val names = withContext(Dispatchers.IO) {
+            val list = mutableListOf<String>()
             try {
                 val text = URL("https://spreadsheets.google.com/feeds/list/YOUR_SHEET_ID/1/public/values?alt=json").readText()
                 val json = JSONObject(text)
@@ -21,20 +25,23 @@ class VpnViewModel : ViewModel() {
                     val entry = entries.getJSONObject(i)
                     val host = entry.getJSONObject("gsx$hostname").getString("\$t")
                     val ip = entry.getJSONObject("gsx$ip").getString("\$t")
-                    hostNames.add(host)
+                    list.add(host)
                     hostMap[host] = ip
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+            list
         }
+        _hostNames.value = names
     }
 
     suspend fun connect(index: Int, path: String?): String {
-        if (index < 0 || index >= hostNames.size) {
+        val names = hostNames.value
+        if (index < 0 || index >= names.size) {
             return "Invalid host index"
         }
-        val host = hostNames[index]
+        val host = names[index]
         val ip = hostMap[host] ?: return "Unknown host"
         val configFile = path?.let { File(it) } ?: return "OVPN path required"
         if (!configFile.exists()) {
