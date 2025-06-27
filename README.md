@@ -9,8 +9,5 @@ Windows specific checks were removed. If the `.ovpn` file path is not provided o
   - `app/src/main/java/com/example/vpn/` – Kotlin sources.
   - `app/src/main/res/layout/` – UI layout.
   - `build.gradle` – Gradle configuration.
-  - `settings.gradle` – declares the `app` module so the project opens directly in Android Studio.
 
-## Building
-Open the `AndroidApp` directory in Android Studio and build the application as usual.  The project includes a single module named `app`.
 
