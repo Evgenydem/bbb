@@ -10,6 +10,4 @@ Windows specific checks were removed. If the `.ovpn` file path is not provided o
   - `app/src/main/res/layout/` – UI layout.
   - `build.gradle` – Gradle configuration.
 
-## Building
-Open the `AndroidApp` directory in Android Studio and build the application as usual.
 
