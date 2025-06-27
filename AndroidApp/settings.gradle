@@ -1,0 +1,2 @@
+rootProject.name = "VPNLauncher"
+include(":app")
